@@ -81,11 +81,6 @@ net_returns = round(net_roi,2)
 KPI = {'Total days':total_days,'Winning days':winning_days,'Losing days':losing_days,'Null days(orders untriggered)':null_days,'Win Ratio (%)':win_ratio, 'Max Profit':max_profit,'Max Loss':max_loss,'Max Drawdown':max_drawdown,'Average Profit on win days': avg_profit_on_win_days, 'Average Loss on loss days': avg_loss_on_loss_days, 'Average Profit per day': avg_profit_per_day,'Expectancy': expectancy,'Net Profit':net_profit, 'Net Returns (%)': net_returns}
 strategy_stats = pd.DataFrame(KPI.values(),index = KPI.keys(),columns = [' '])
 
-
-#MarketScanner Logo
-img = mpimg.imread('ms_logo.png')
-st.image(img,width = 700)
-
 #Content and charts on the webapp
 st.markdown("<h1 style='text-align: center; color: black;'>Live Performance of Mean Reversion Strategy</h1>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: right; color: black;'>[Capital used is 1 lac with 3x leverage (we do not recommend to use more than 3x margin)]</h4>", unsafe_allow_html=True)
