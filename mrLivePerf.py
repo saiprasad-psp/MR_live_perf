@@ -14,7 +14,8 @@ import plotly.express as px
 import matplotlib.image as mpimg 
 
 
-api_url_mr = "https://e91pez1xi8.execute-api.ap-south-1.amazonaws.com/pnl?"
+#api_url_mr = "https://e91pez1xi8.execute-api.ap-south-1.amazonaws.com/pnl?"
+api_url_mr = "https://pythonbucketbh.s3.ap-south-1.amazonaws.com/pnl.json"
 payload = {}
 headers= {}
 response_mr = requests.request("GET", api_url_mr, headers=headers, data = payload)
