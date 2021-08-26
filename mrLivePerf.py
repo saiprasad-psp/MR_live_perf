@@ -84,9 +84,9 @@ strategy_stats = pd.DataFrame(KPI.values(),index = KPI.keys(),columns = [' '])
 
 #Content and charts on the webapp
 st.markdown("<h1 style='text-align: center; color: black;'>Live Performance of Mean Reversion Strategy</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: right; color: black;'>[Capital used is 1 lac with 3x leverage (we do not recommend to use more than 3x margin)]</h4>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: right; color: black;'>[Daily Maximum Risk:- 9000]</h4>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: right; color: black;'>[Start Date :- 26 Aug, 2020]</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: right; color: black;'>[Capital used is 1 lac with 1x leverage (It is not recommended to use more than 3x margin)]</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: right; color: black;'>[Daily Maximum Risk:- 8000. Brokerage & Charges not included]</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: right; color: black;'>[Start Date :- 27 APr, 2021]</h4>", unsafe_allow_html=True)
 #link = '[Sign up for the Free Trial of this bot](https://forms.gle/sGAjc37RHK4VM7bq9)'
 #st.markdown(link, unsafe_allow_html=True)
 #Percentage ROI
