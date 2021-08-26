@@ -26,7 +26,7 @@ df = pd.DataFrame(data)
 df = df.rename(columns = {'_id':'Date'})
 #df = df.set_index('_id')
 df = df.iloc[::-1]
-df['pnl'] = round(df['pnl']*3,1)
+df['pnl'] = round(df['pnl'],1)
 df['cum_pnl'] = df['pnl'].cumsum()
 net_roi = round(df['cum_pnl'].iloc[-1]*100/100000,2)
 df['month'] = pd.DatetimeIndex(df['Date']).month 
