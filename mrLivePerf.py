@@ -50,6 +50,7 @@ drawdown_df=strat_df.copy()
 drawdown_df.reset_index(drop=True,inplace=True)
 drawdown_df['max_value_so_far']=drawdown_df['cum_pnl'].cummax()
 drawdown_df['drawdown']=drawdown_df['cum_pnl']-drawdown_df['max_value_so_far']
+max_drawdown=drawdown_df['drawdown'].min()
 ##Strategy statistics
 stats_Df=pd.DataFrame(columns=["Total Days","Winning Days","Losing Days","Win Ratio(%)","Max Profit","Max Loss","Max Drawdown","Average Profit on Win Days","Average Profit on loss days","Average Profit Per day","Net profit","net Returns (%)"])
 total_days=len(strat_df)
@@ -64,7 +65,7 @@ win_ratio=win_days*1.0/lose_days
 max_profit=strat_df[option].max()
 max_loss=strat_df[option].min()
 
-max_drawdown=0
+#max_drawdown=0
 win_average_profit=win_df[option].sum()/win_days
 loss_average_profit=lose_df[option].sum()/lose_days
 
@@ -106,3 +107,5 @@ st.write("**Month-wise PNL**")
 st.table(month_groups)
 st.write("**Date-wise PNL (Last 30 Days)**")
 st.table(strat_df['PNL'][:30])
+
+
