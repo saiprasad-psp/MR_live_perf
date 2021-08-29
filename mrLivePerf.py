@@ -64,7 +64,7 @@ loss_average_profit=lose_df[option].sum()/lose_days
 total_profit=strat_df[option].sum()
 average_profit=total_profit/total_days
 
-net_returns=strat_df[option].sum()
+net_returns= round(strat_df['cum_pnl'].iloc[-1]*100/botCapital,2)
 
 results_row=[total_days,win_days,lose_days,win_ratio,max_profit,max_loss,max_drawdown,win_average_profit,loss_average_profit,average_profit,total_profit,net_returns]
 
@@ -87,6 +87,11 @@ st.title("**♟**Strategy PERFORMANCE**♟**")
 st.write("**LIVE PERFORMANCE OF "+option+"**")
 st.write("**[Capital used is "+str(botCapital)+"]**")
 st.write("Net ROI : "+str(results_row[-1])+"%")
+option = st.selectbox(
+    'Select Strategy',
+    ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
+st.write('You selected:', option)
+
 st.write("**Statistics**")
 st.table(t_stats_Df)
 st.write("**PNL Curve**")
@@ -97,4 +102,5 @@ st.write("**Month-wise PNL**")
 st.table(month_groups)
 st.write("**Date-wise PNL (Last 30 Days)**")
 st.table(strat_df['PNL'][:30])
+
 
