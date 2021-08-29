@@ -32,7 +32,7 @@ strat_df=strat_pnl_Df
 ##PNL plot
 strat_df['pdTime']=pd.to_datetime(strat_df.index,format="%Y-%m-%d")
 strat_df.sort_values('pdTime',inplace=True)
-strat_df[option]=(botCapital/100)*strat_df[option].astype(float)
+#strat_df[option]=(botCapital/100)*strat_df[option].astype(float)
 strat_df["Time"]=strat_df.index
 strat_df['PNL']=strat_df[option]
 strat_df['cum_pnl']=strat_df[option].cumsum()
