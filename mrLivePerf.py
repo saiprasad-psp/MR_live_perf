@@ -1,123 +1,94 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 24 14:23:38 2021
+Created on Sun Aug 29 12:16:56 2021
 
 @author: sai.pydisetty
 """
 
-import json
-import numpy as np
-import pandas as pd
 import requests
-import streamlit as st
-import plotly.express as px
-import matplotlib.image as mpimg 
+import json
+import pandas as pd
+
+pnl_url = 'https://pythonbucketbh.s3.ap-south-1.amazonaws.com/allPnl.json'
+
+pnl_data=requests.get(pnl_url)
+pnl_df_t=pd.DataFrame.from_dict(json.loads(pnl_data.text))
+pnl_df=pnl_df_t.T
+pnl_df['ALL']=pnl_df['pnl']+pnl_df['intra_pnl']+pnl_df['mr_pnl']
+option = 'ALL'
+strategyCapitalDic={"BNFStraddle":200000,"MeanReversion":100000,"IntradayTrend":50000, "ALL":350000}
+
+botCapital=strategyCapitalDic[option]
+strat_pnl_Df=pnl_df[[option]]
+strat_pnl_Df.dropna(inplace=True)
+strat_df=strat_pnl_Df
+
+##PNL plot
+strat_df['pdTime']=pd.to_datetime(strat_df.index,format="%Y-%m-%d")
+strat_df.sort_values('pdTime',inplace=True)
+strat_df[option+'_adj_PnL']=(botCapital/100)*strat_df[option+' Returns'].astype(float)
+strat_df["Time"]=strat_df.index
+strat_df['PNL']=strat_df[option+'_adj_PnL']
+strat_df['cum_pnl']=strat_df[option+'_adj_PnL'].cumsum()
 
 
-#api_url_mr = "https://e91pez1xi8.execute-api.ap-south-1.amazonaws.com/pnl?"
-api_url_mr = "https://pythonbucketbh.s3.ap-south-1.amazonaws.com/pnl.json"
-payload = {}
-headers= {}
-response_mr = requests.request("GET", api_url_mr, headers=headers, data = payload)
-data = json.loads(response_mr.text)['data']
+##DRAWDOWN
+drawdown_df=strat_df.copy()
+drawdown_df.reset_index(drop=True,inplace=True)
+drawdown_df['max_value_so_far']=drawdown_df['cum_pnl'].cummax()
+drawdown_df['drawdown']=drawdown_df['cum_pnl']-drawdown_df['max_value_so_far']
+##Strategy statistics
+stats_Df=pd.DataFrame(columns=["Total Days","Winning Days","Losing Days","Win Ratio(%)","Max Profit","Max Loss","Max Drawdown","Average Profit on Win Days","Average Profit on loss days","Average Profit Per day","Net profit","net Returns (%)"])
+total_days=len(strat_df)
+win_df=strat_df[strat_df[option+'_adj_PnL'].astype('float')>0]
+lose_df=strat_df[strat_df[option+'_adj_PnL'].astype('float')<0]
+noTrade_df=strat_df[strat_df[option+'_adj_PnL'].astype('float')==0]
 
-#Dataframe for daily returns
-df = pd.DataFrame(data)
-df = df.rename(columns = {'_id':'Date'})
-#df = df.set_index('_id')
-df = df.iloc[::-1]
-df['pnl'] = round(df['pnl'],1)
-df['cum_pnl'] = df['pnl'].cumsum()
-net_roi = round(df['cum_pnl'].iloc[-1]*100/100000,2)
-df['month'] = pd.DatetimeIndex(df['Date']).month 
-df['year'] = pd.DatetimeIndex(df['Date']).year
-df['month'] = pd.to_datetime(df['month'], format='%m').dt.month_name().str.slice(stop=3)
-df['month_year'] = (df['month'] + df['year'].astype(str)).str.slice(stop = 7)
+win_days=len(win_df)
+lose_days=len(lose_df)
 
-#Dataframe for monthly returns
-df1 = df.groupby(['month_year'],sort = False).sum()
-df1['% Returns'] = round(df1['pnl']*100/100000,2)
-df1 = df1.reset_index()
+win_ratio=win_days*1.0/lose_days
+max_profit=strat_df[option+'_adj_PnL'].max()
+max_loss=strat_df[option+'_adj_PnL'].min()
 
-fig_pnl = px.line(df, x='Date', y='cum_pnl',width = 800,height = 500)
+max_drawdown=0
+win_average_profit=win_df[option+'_adj_PnL'].sum()/win_days
+loss_average_profit=lose_df[option+'_adj_PnL'].sum()/lose_days
 
-#Remove the None element
-if df.Date[0]:
-    df = df[1:]
+total_profit=strat_df[option+'_adj_PnL'].sum()
+average_profit=total_profit/total_days
 
-#Create Drawdown column
-df['drawdown'] = 0
-for i in range(0,df.shape[0]):
-    
-    if i == 0:
-        if df['pnl'].iloc[i] > 0:
-            df['drawdown'].iloc[i] = 0
-        else:
-            df['drawdown'].iloc[i] = df['pnl'].iloc[i]
-    else:
-        if df['pnl'].iloc[i] + df['drawdown'].iloc[i-1] > 0:
-            df['drawdown'].iloc[i] = 0
-        else:
-            df['drawdown'].iloc[i] = df['pnl'].iloc[i] + df['drawdown'].iloc[i-1]
+net_returns=strat_df[option+' Returns'].sum()
 
-fig_dd = px.line(df, x='Date', y='drawdown',width = 800,height = 500)
+results_row=[total_days,win_days,lose_days,win_ratio,max_profit,max_loss,max_drawdown,win_average_profit,loss_average_profit,average_profit,total_profit,net_returns]
 
-#Statistics
-total_days = len(df)
-winning_days = (df['pnl'] > 0).sum()
-losing_days = (df['pnl'] < 0).sum()
-null_days = (df['pnl'] == 0).sum()
+results_row=[results_row[i] if i<3 else round(results_row[i],2) for i in range(len(results_row)) ]
+stats_Df.loc[0,:]=results_row
+t_stats_Df=stats_Df.T
+t_stats_Df.rename(columns={0:''},inplace=True)
+fig=px.line(strat_df, x="Time", y='cum_pnl', title=option+' PNL',width=800, height=400)
+dd_fig=px.line(drawdown_df,x="Time",y="drawdown", title=option+' PNL',width=800, height=400)
 
-win_ratio = round((df['pnl'] > 0).sum()*100/len(df),2)
-max_profit = round(df['pnl'].max(),2)
-max_loss = round(df['pnl'].min(),2)
-max_drawdown = round(df['drawdown'].min(),2)
-avg_profit_on_win_days = df[df['pnl'] > 0]['pnl'].sum()/len(df[df['pnl'] > 0])
-avg_loss_on_loss_days = df[df['pnl'] < 0]['pnl'].sum()/len(df[df['pnl'] < 0])
-avg_profit_per_day = df['pnl'].sum()/len(df)
-expectancy = round(((avg_profit_on_win_days*win_ratio + avg_loss_on_loss_days*(100 - win_ratio))*0.01)/(-avg_loss_on_loss_days),8)
-net_profit = round(df['cum_pnl'].iloc[-1],2)
-net_returns = round(net_roi,2)
+strat_df['month']=strat_df['pdTime'].apply(lambda x:x.strftime('%b,%Y'))
 
-KPI = {'Total days':total_days,'Winning days':winning_days,'Losing days':losing_days,'Null days(orders untriggered)':null_days,'Win Ratio (%)':win_ratio, 'Max Profit':max_profit,'Max Loss':max_loss,'Max Drawdown':max_drawdown,'Average Profit on win days': avg_profit_on_win_days, 'Average Loss on loss days': avg_loss_on_loss_days, 'Average Profit per day': avg_profit_per_day,'Expectancy': expectancy,'Net Profit':net_profit, 'Net Returns (%)': net_returns}
-strategy_stats = pd.DataFrame(KPI.values(),index = KPI.keys(),columns = [' '])
-
-#Content and charts on the webapp
-st.markdown("<h1 style='text-align: center; color: black;'>Live Performance of Mean Reversion Strategy</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: right; color: black;'>[Capital used is 1 lac with 1x leverage (It is not recommended to use more than 3x margin)]</h4>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: right; color: black;'>[Daily Maximum Risk:- 8000. Brokerage & Charges not included]</h4>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: right; color: black;'>[Start Date :- 27 Apr, 2021]</h4>", unsafe_allow_html=True)
-option = st.selectbox(
-    'Select Strategy',
-    ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
-st.write('You selected:', option)
-#link = '[Sign up for the Free Trial of this bot](https://forms.gle/sGAjc37RHK4VM7bq9)'
-#st.markdown(link, unsafe_allow_html=True)
-#Percentage ROI
-st.header('Net ROI: '+ str(net_roi) + '%')
-
-#Statistics
-st.header('Strategy Statistics')
-st.table(strategy_stats)
-
-#PNL curve
-st.header('PNL Curve')
-st.plotly_chart(fig_pnl)
-
-#Drawdown curve
-st.header('Drawdown Curve')
-st.plotly_chart(fig_dd)
-
-#Month-wise PNL
-st.header('Month-wise PNL')
-st.table(df1[['month_year','% Returns']])
-
-#Date-wise PNL
-st.header('Date-wise PNL (Last 30 days)')
-st.table(df[['Date','pnl']][-30:].astype('object'))
+month_groups=strat_df.groupby('month',sort=False)['PNL'].sum()
 
 
-# HtmlFile = open(“index.html”, ‘r’, encoding=‘utf-8’)
-# source_code = HtmlFile.read()
-# print(source_code)
-# components.html(source_code, height=600)
+##last 30 days pnl
+strat_df=strat_df.reindex(strat_df.index[::-1])
+
+st.title("**♟**Strategy PERFORMANCE**♟**")
+st.write("**LIVE PERFORMANCE OF "+option+"**")
+st.write("**[Capital used is "+str(botCapital)+"]**")
+st.write("Net ROI : "+str(results_row[-1])+"%")
+st.write("**Statistics**")
+st.table(t_stats_Df)
+st.write("**PNL Curve**")
+st.plotly_chart(fig)
+st.write("**Drawdown Curve**")
+st.plotly_chart(dd_fig)
+st.write("**Month-wise PNL**")
+st.table(month_groups)
+st.write("**Date-wise PNL (Last 30 Days)**")
+st.table(strat_df['PNL'][:30])
+
