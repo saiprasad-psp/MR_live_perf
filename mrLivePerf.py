@@ -28,7 +28,6 @@ st.title("**♟**PERFORMANCE**♟**")
 option = st.selectbox(
     'Select Strategy',
     ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
-st.write('You selected:', option)
 
 strategyCapitalDic={"BNFStraddle":200000,"MeanReversion":100000,"IntradayTrend":50000, "ALL":350000}
 
