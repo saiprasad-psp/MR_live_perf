@@ -26,10 +26,10 @@ strat_df=strat_pnl_Df
 ##PNL plot
 strat_df['pdTime']=pd.to_datetime(strat_df.index,format="%Y-%m-%d")
 strat_df.sort_values('pdTime',inplace=True)
-strat_df[option+'_adj_PnL']=(botCapital/100)*strat_df[option+' Returns'].astype(float)
+strat_df[option]=(botCapital/100)*strat_df[option+' Returns'].astype(float)
 strat_df["Time"]=strat_df.index
-strat_df['PNL']=strat_df[option+'_adj_PnL']
-strat_df['cum_pnl']=strat_df[option+'_adj_PnL'].cumsum()
+strat_df['PNL']=strat_df[option]
+strat_df['cum_pnl']=strat_df[option].cumsum()
 
 
 ##DRAWDOWN
@@ -40,22 +40,22 @@ drawdown_df['drawdown']=drawdown_df['cum_pnl']-drawdown_df['max_value_so_far']
 ##Strategy statistics
 stats_Df=pd.DataFrame(columns=["Total Days","Winning Days","Losing Days","Win Ratio(%)","Max Profit","Max Loss","Max Drawdown","Average Profit on Win Days","Average Profit on loss days","Average Profit Per day","Net profit","net Returns (%)"])
 total_days=len(strat_df)
-win_df=strat_df[strat_df[option+'_adj_PnL'].astype('float')>0]
-lose_df=strat_df[strat_df[option+'_adj_PnL'].astype('float')<0]
-noTrade_df=strat_df[strat_df[option+'_adj_PnL'].astype('float')==0]
+win_df=strat_df[strat_df[option].astype('float')>0]
+lose_df=strat_df[strat_df[option].astype('float')<0]
+noTrade_df=strat_df[strat_df[option].astype('float')==0]
 
 win_days=len(win_df)
 lose_days=len(lose_df)
 
 win_ratio=win_days*1.0/lose_days
-max_profit=strat_df[option+'_adj_PnL'].max()
-max_loss=strat_df[option+'_adj_PnL'].min()
+max_profit=strat_df[option].max()
+max_loss=strat_df[option].min()
 
 max_drawdown=0
-win_average_profit=win_df[option+'_adj_PnL'].sum()/win_days
-loss_average_profit=lose_df[option+'_adj_PnL'].sum()/lose_days
+win_average_profit=win_df[option].sum()/win_days
+loss_average_profit=lose_df[option].sum()/lose_days
 
-total_profit=strat_df[option+'_adj_PnL'].sum()
+total_profit=strat_df[option].sum()
 average_profit=total_profit/total_days
 
 net_returns=strat_df[option+' Returns'].sum()
