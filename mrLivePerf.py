@@ -58,7 +58,7 @@ loss_average_profit=lose_df[option].sum()/lose_days
 total_profit=strat_df[option].sum()
 average_profit=total_profit/total_days
 
-net_returns=strat_df[option+' Returns'].sum()
+net_returns=strat_df[option].sum()
 
 results_row=[total_days,win_days,lose_days,win_ratio,max_profit,max_loss,max_drawdown,win_average_profit,loss_average_profit,average_profit,total_profit,net_returns]
 
