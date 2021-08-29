@@ -21,6 +21,7 @@ pnl_data=requests.get(pnl_url)
 pnl_df_t=pd.DataFrame.from_dict(json.loads(pnl_data.text))
 pnl_df=pnl_df_t.T
 pnl_df['ALL']=pnl_df['pnl']+pnl_df['intra_pnl']+pnl_df['mr_pnl']
+pnl_df.rename({'pnl':'BNFStraddle', 'intra_pnl':'IntradayTrend', 'mr_pnl':'MeanReversion'}, axis=1,inplace=True)
 option = 'ALL'
 
 st.title("**♟**PERFORMANCE**♟**")
