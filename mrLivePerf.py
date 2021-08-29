@@ -5,9 +5,15 @@ Created on Sun Aug 29 12:16:56 2021
 @author: sai.pydisetty
 """
 
-import requests
-import json
 import pandas as pd
+import numpy as np
+import streamlit as st
+import plotly.graph_objects as go
+from plotly import tools
+import plotly.offline as py
+import plotly.express as px
+import requests,json
+from datetime import datetime
 
 pnl_url = 'https://pythonbucketbh.s3.ap-south-1.amazonaws.com/allPnl.json'
 
