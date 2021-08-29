@@ -22,6 +22,13 @@ pnl_df_t=pd.DataFrame.from_dict(json.loads(pnl_data.text))
 pnl_df=pnl_df_t.T
 pnl_df['ALL']=pnl_df['pnl']+pnl_df['intra_pnl']+pnl_df['mr_pnl']
 option = 'ALL'
+
+st.title("**♟**PERFORMANCE**♟**")
+option = st.selectbox(
+    'Select Strategy',
+    ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
+st.write('You selected:', option)
+
 strategyCapitalDic={"BNFStraddle":200000,"MeanReversion":100000,"IntradayTrend":50000, "ALL":350000}
 
 botCapital=strategyCapitalDic[option]
@@ -83,14 +90,11 @@ month_groups=strat_df.groupby('month',sort=False)['PNL'].sum()
 ##last 30 days pnl
 strat_df=strat_df.reindex(strat_df.index[::-1])
 
-st.title("**♟**Strategy PERFORMANCE**♟**")
+
 st.write("**LIVE PERFORMANCE OF "+option+"**")
 st.write("**[Capital used is "+str(botCapital)+"]**")
 st.write("Net ROI : "+str(results_row[-1])+"%")
-option = st.selectbox(
-    'Select Strategy',
-    ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
-st.write('You selected:', option)
+
 
 st.write("**Statistics**")
 st.table(t_stats_Df)
