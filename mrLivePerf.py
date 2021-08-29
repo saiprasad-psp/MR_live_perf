@@ -107,5 +107,3 @@ st.write("**Month-wise PNL**")
 st.table(month_groups)
 st.write("**Date-wise PNL (Last 30 Days)**")
 st.table(strat_df['PNL'][:30])
-
-
