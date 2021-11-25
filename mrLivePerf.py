@@ -92,7 +92,7 @@ month_groups=strat_df.groupby('month',sort=False)['PNL'].sum()
 strat_df=strat_df.reindex(strat_df.index[::-1])
 
 
-st.write("**LIVE PERFORMANCE OF "+option+"**")
+st.title("**LIVE PERFORMANCE OF "+option+"**")
 st.write("**[Capital used is "+str(botCapital)+"]**")
 st.write("Net ROI : "+str(results_row[-1])+"%")
 
