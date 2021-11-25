@@ -24,7 +24,7 @@ pnl_df['ALL']=pnl_df['pnl']+pnl_df['intra_pnl']+pnl_df['mr_pnl']
 pnl_df.rename({'pnl':'BNFStraddle', 'intra_pnl':'IntradayTrend', 'mr_pnl':'MeanReversion'}, axis=1,inplace=True)
 option = 'ALL'
 
-st.title("**♟**PERFORMANCE**♟**")
+st.title("****PERFORMANCE****")
 option = st.selectbox(
     'Select Strategy',
     ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
