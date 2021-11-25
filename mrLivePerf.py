@@ -23,8 +23,7 @@ pnl_df=pnl_df_t.T
 pnl_df['ALL']=pnl_df['pnl']+pnl_df['intra_pnl']+pnl_df['mr_pnl']
 pnl_df.rename({'pnl':'BNFStraddle', 'intra_pnl':'IntradayTrend', 'mr_pnl':'MeanReversion'}, axis=1,inplace=True)
 option = 'ALL'
-abc = "****PERFORMANCE****"
-st.title(abc)
+
 option = st.selectbox(
     'Select Strategy',
     ('ALL', 'BNFStraddle', 'MeanReversion', 'IntradayTrend'))
@@ -91,7 +90,6 @@ month_groups=strat_df.groupby('month',sort=False)['PNL'].sum()
 ##last 30 days pnl
 strat_df=strat_df.reindex(strat_df.index[::-1])
 
-abc = "**LIVE PERFORMANCE OF "+option+"**"
 st.title("**LIVE PERFORMANCE OF "+option+"**")
 st.write("**[Capital used is "+str(botCapital)+"]**")
 st.write("Net ROI : "+str(results_row[-1])+"%")
