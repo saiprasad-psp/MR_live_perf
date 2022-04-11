@@ -15,8 +15,8 @@ import plotly.express as px
 import requests,json
 from datetime import datetime
 
-#pnl_url = 'https://pythonbucketbh.s3.ap-south-1.amazonaws.com/allPnl.json'
-pnl_url = 'https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/s2L-QqMnySLTLRjkmThWQCcK6RNpgRYgf-EN5rTnNNT6WMnUxDHUHTIDMD9zRloa/n/frj64xgqdjz2/b/bucket-20220326-2113/o/allPnl.json'
+pnl_url = 'https://pythonbucketbh.s3.ap-south-1.amazonaws.com/allPnl.json'
+#pnl_url = 'https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/s2L-QqMnySLTLRjkmThWQCcK6RNpgRYgf-EN5rTnNNT6WMnUxDHUHTIDMD9zRloa/n/frj64xgqdjz2/b/bucket-20220326-2113/o/allPnl.json'
 pnl_data=requests.get(pnl_url)
 pnl_df_t=pd.DataFrame.from_dict(json.loads(pnl_data.text))
 pnl_df=pnl_df_t.T
